@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A sample template
+Resources:
+  infosysVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+       - Key: Name
+         Value: infosys-VPC
+
+  infosysInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: infosys-IGW
+
+  infosysAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+         Ref: infosysVPC
+      InternetGatewayId:
+         Ref: infosysInternetGateway
+
+  infosysPUBSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: infosysVPC
+      CidrBlock: 10.0.0.0/20
+      AvailabilityZone: "us-east-1a"
+      MapPublicIpOnLaunch: "true"
+      Tags:
+      - Key: Name
+        Value: infosys-pub-sub
+
+  infosysPVTSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: infosysVPC
+      CidrBlock: 10.0.16.1/20
+      AvailabilityZone: "us-east-1b"
+      Tags:
+      - Key: Name
+        Value: infosys-pvt-sub
+
+  infosysPUBRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: infosysVPC
+      Tags:
+      - Key: Name
+        Value: infosys-pub-RT
+
+  infosysPVTRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: infosysVPC
+      Tags:
+      - Key: Name
+        Value: infosys-pvt-RT
+
+  infosysPUBSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: infosysPUBSubnet
+      RouteTableId:
+        Ref: infosysPUBRouteTable
+
+  infosysSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: infosysPVTSubnet
+      RouteTableId:
+        Ref: infosysPVTRouteTable
+
+  infosysADDRoute:
+    Type: AWS::EC2::Route
+    DependsOn: infosysAttachGateway
+    Properties:
+       RouteTableId:
+         Ref: infosysPUBRouteTable
+       DestinationCidrBlock: 0.0.0.0/0
+       GatewayId:
+         Ref: infosysInternetGateway
