@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: A sample template
 Resources:
-  infosysVPC:
+  DummyVPC:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
@@ -9,86 +9,86 @@ Resources:
       EnableDnsHostnames: 'true'
       Tags:
        - Key: Name
-         Value: infosys-VPC
+         Value: Dummy-VPC
 
-  infosysInternetGateway:
+  DummyInternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
       - Key: Name
-        Value: infosys-IGW
+        Value: Dummy-IGW
 
-  infosysAttachGateway:
+  DummyAttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId:
-         Ref: infosysVPC
+         Ref: DummyVPC
       InternetGatewayId:
-         Ref: infosysInternetGateway
+         Ref: DummyInternetGateway
 
-  infosysPUBSubnet:
+  DummyPUBSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId:
-        Ref: infosysVPC
+        Ref: DummyVPC
       CidrBlock: 10.0.0.0/20
       AvailabilityZone: "us-east-1a"
       MapPublicIpOnLaunch: "true"
       Tags:
       - Key: Name
-        Value: infosys-pub-sub
+        Value: Dummy-pub-sub
 
-  infosysPVTSubnet:
+  DummyPVTSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId:
-        Ref: infosysVPC
+        Ref: DummyVPC
       CidrBlock: 10.0.16.1/20
       AvailabilityZone: "us-east-1b"
       Tags:
       - Key: Name
-        Value: infosys-pvt-sub
+        Value: Dummy-pvt-sub
 
-  infosysPUBRouteTable:
+  DummyPUBRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId:  
-        Ref: infosysVPC
+        Ref: DummyVPC
       Tags:
       - Key: Name
-        Value: infosys-pub-RT
+        Value: Dummy-pub-RT
 
-  infosysPVTRouteTable:
+  DummyPVTRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId:  
-        Ref: infosysVPC
+        Ref: DummyVPC
       Tags:
       - Key: Name
-        Value: infosys-pvt-RT
+        Value: Dummy-pvt-RT
 
-  infosysPUBSubnetRouteTableAssociation:
+  DummyPUBSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId:
-        Ref: infosysPUBSubnet
+        Ref: DummyPUBSubnet
       RouteTableId:
-        Ref: infosysPUBRouteTable
+        Ref: DummyPUBRouteTable
 
-  infosysSubnetRouteTableAssociation:
+  DummySubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId:
-        Ref: infosysPVTSubnet
+        Ref: DummyPVTSubnet
       RouteTableId:
-        Ref: infosysPVTRouteTable
+        Ref: DummyPVTRouteTable
 
-  infosysADDRoute:
+  DummyADDRoute:
     Type: AWS::EC2::Route
-    DependsOn: infosysAttachGateway
+    DependsOn: DummyAttachGateway
     Properties:
        RouteTableId:
-         Ref: infosysPUBRouteTable
+         Ref: DummyPUBRouteTable
        DestinationCidrBlock: 0.0.0.0/0
        GatewayId:
-         Ref: infosysInternetGateway
+         Ref: DummyInternetGateway
